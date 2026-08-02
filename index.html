@@ -94,6 +94,9 @@
             border: 1px solid var(--border-color); position: relative;
         }
         .menu-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); border-color: var(--primary-color); }
+        .card-image-wrapper { width: 100%; aspect-ratio: 16 / 10; overflow: hidden; background-color: var(--bg-color); }
+        .card-image { width: 100%; height: 100%; object-fit: cover; display: block; transition: var(--transition); }
+        .menu-card:hover .card-image { transform: scale(1.05); }
         .card-content { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; }
         .item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
         .item-name { font-size: 1.2rem; font-weight: 800; color: var(--secondary-color); }
@@ -426,6 +429,9 @@
                     cat.itemIndex[itemName] = newItem;
                 }
                 cat.itemIndex[itemName].sizes[size] = price;
+                if (image && !cat.itemIndex[itemName].image) {
+                    cat.itemIndex[itemName].image = image;
+                }
             }
 
             return categoriesOrder.map(name => {
@@ -542,9 +548,16 @@
 
                     const caloriesHtml = item.calories ? `<span class="item-calories">${item.calories} سعرة</span>` : '';
                     const enNameHtml = item.enName ? `<div style="font-size: 0.9rem; color: var(--text-muted); direction: ltr; text-align: right; margin-top: 2px; font-weight: 600;">${item.enName}</div>` : '';
+                    const imageHtml = item.image
+                        ? `<div class="card-image-wrapper">
+                               <img class="card-image" src="${item.image}" alt="${item.name}" loading="lazy"
+                                    onerror="this.parentElement.remove()">
+                           </div>`
+                        : '';
 
                     const cardHtml = `
                         <div class="menu-card" data-id="${item.id}">
+                            ${imageHtml}
                             <div class="card-content">
                                 <div class="item-header">
                                     <div style="flex:1; padding-left:10px;">
