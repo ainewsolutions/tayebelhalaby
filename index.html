@@ -87,6 +87,30 @@
             border-bottom: 2px solid var(--primary-color); display: flex; align-items: center; justify-content: space-between;
         }
         .section-decorative { color: var(--primary-color); font-size: 1.2rem; }
+        .category-banner-wrapper {
+            width: 100vw; position: relative; left: 50%; right: 50%;
+            margin-left: -50vw; margin-right: -50vw; margin-top: 2.5rem;
+            overflow: hidden; box-shadow: var(--shadow-md);
+        }
+        .category-banner-wrapper:first-child { margin-top: 0.5rem; }
+        .category-banner {
+            width: 100%; height: 220px; object-fit: cover; display: block;
+            transition: var(--transition);
+        }
+        .category-banner-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(74,59,44,0.75) 0%, rgba(74,59,44,0.15) 55%, rgba(74,59,44,0) 100%);
+            display: flex; align-items: flex-end; justify-content: center;
+            padding-bottom: 1rem; pointer-events: none;
+        }
+        .category-banner-label {
+            color: #fff; font-size: 1.6rem; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        @media (max-width: 600px) {
+            .category-banner { height: 150px; }
+            .category-banner-label { font-size: 1.3rem; }
+        }
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
         .menu-card {
             background-color: var(--surface-color); border-radius: var(--radius-lg); overflow: hidden;
@@ -360,6 +384,29 @@
         ========================================================= */
         const MENU_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkBq9lkQK0og3SYLSKrYpOBMkeqSy-j-1wxOVx_NXtLkJjtYZz33In0lbwCOLV4w/pub?gid=627679876&single=true&output=csv";
 
+        /* =========================================================
+           CATEGORY BANNER IMAGES
+           Each category shows a full-width banner image sitting right
+           next to the index.html file (same folder), as a JPEG named
+           exactly after the category. If a category name in the sheet
+           doesn't match one of these keys exactly, the code falls back
+           to "<category name>.jpg" automatically.
+        ========================================================= */
+        const CATEGORY_IMAGES = {
+            "المشويات": "المشويات.jpg",
+            "تباسي": "تباسي.jpg",
+            "مزة ساخنة": "مزة ساخنة.jpg",
+            "ساندوتشات": "ساندوتشات.jpg",
+            "مقبلات": "مقبلات.jpg",
+            "الحلى": "الحلى.jpg",
+            "مشروبات": "مشروبات.jpg"
+        };
+
+        function getCategoryImageUrl(categoryName) {
+            const fileName = CATEGORY_IMAGES[categoryName.trim()] || (categoryName.trim() + ".jpg");
+            return encodeURIComponent(fileName);
+        }
+
         function parseCSV(text) {
             const rows = [];
             let row = [], field = '', inQuotes = false;
@@ -518,6 +565,17 @@
 
                 if (filteredItems.length === 0) return;
                 hasResults = true;
+
+                const bannerWrapper = document.createElement('div');
+                bannerWrapper.className = 'category-banner-wrapper';
+                bannerWrapper.innerHTML = `
+                    <img class="category-banner" src="${getCategoryImageUrl(category.name)}" alt="${category.name}"
+                         loading="lazy" onerror="this.closest('.category-banner-wrapper').remove()">
+                    <div class="category-banner-overlay">
+                        <div class="category-banner-label">${category.icon} ${category.name}</div>
+                    </div>
+                `;
+                menuContainer.appendChild(bannerWrapper);
 
                 const sectionTitle = document.createElement('h2');
                 sectionTitle.className = 'category-section-title';
