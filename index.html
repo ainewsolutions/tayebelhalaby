@@ -396,15 +396,25 @@
             "المشويات": "المشويات.jpg",
             "تباسي": "تباسي.jpg",
             "مزة ساخنة": "مزة ساخنة.jpg",
-            "ساندوتشات": "ساندوتشات.jpg",
+            "ساندويشات": "ساندويشات.jpg",
             "مقبلات": "مقبلات.jpg",
             "الحلى": "الحلى.jpg",
-            "مشروبات": "مشروبات.jpg"
+            "المشروبات": "المشروبات.jpg"
         };
 
         function getCategoryImageUrl(categoryName) {
             const fileName = CATEGORY_IMAGES[categoryName.trim()] || (categoryName.trim() + ".jpg");
             return encodeURIComponent(fileName);
+        }
+
+        /* =========================================================
+           ITEM IMAGES
+           كل صنف له صورة JPEG بنفس اسم الصنف بالظبط، موضوعة في نفس
+           فولدر index.html. مثال: صنف "1 ك ريش" => الصورة اسمها
+           "1 ك ريش.jpg"
+        ========================================================= */
+        function getItemImageUrl(itemName) {
+            return encodeURIComponent(itemName.trim() + ".jpg");
         }
 
         function parseCSV(text) {
@@ -606,12 +616,10 @@
 
                     const caloriesHtml = item.calories ? `<span class="item-calories">${item.calories} سعرة</span>` : '';
                     const enNameHtml = item.enName ? `<div style="font-size: 0.9rem; color: var(--text-muted); direction: ltr; text-align: right; margin-top: 2px; font-weight: 600;">${item.enName}</div>` : '';
-                    const imageHtml = item.image
-                        ? `<div class="card-image-wrapper">
-                               <img class="card-image" src="${item.image}" alt="${item.name}" loading="lazy"
+                    const imageHtml = `<div class="card-image-wrapper">
+                               <img class="card-image" src="${getItemImageUrl(item.name)}" alt="${item.name}" loading="lazy"
                                     onerror="this.parentElement.remove()">
-                           </div>`
-                        : '';
+                           </div>`;
 
                     const cardHtml = `
                         <div class="menu-card" data-id="${item.id}">
